@@ -393,7 +393,7 @@ class Model():
 
         # # --------------------------------------------------------------------
         # Define final cost and optimizer
-        '''
+
         # normalize cost
         self.cost_pos_dec /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
         self.cost_valid /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
@@ -454,7 +454,7 @@ class Model():
         # define train operation
         self.train_op_pose = optimizer.apply_gradients(zip(grads_pose, tvars_anal_pose))
         self.train_op_reward = optimizer.apply_gradients(zip(grads_reward, tvars_anal_reward))
-        '''
+
 
     def GetSocialPooledHiddenStates(self, grid_map, output_states, w, b):
         '''
