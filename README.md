@@ -12,6 +12,8 @@ To train the network from scratch, run the followings. The parameters of the tra
 $ python crowd_train.py --dataset_num 1 --exp_id 0
 $ python sdd_train.py --dataset_num 1 --exp_id 0
 ```
+**crowd_train.py** and **sdd_train.py** have a number of command-line flags that you can use to configure the model architecture, hyperparameters, and input / output settings. You can find the descriptions in the files.
+
 
 To test the trained model, run the followings. The program will automatically read the parameters of the train networks in the folder ***saved_1_0***.
 ```sh
