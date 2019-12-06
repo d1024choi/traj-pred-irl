@@ -43,20 +43,14 @@ def main():
     parser = argparse.ArgumentParser()
 
     # # network structure : LSTM
-    parser.add_argument('--rnn_size', type=int, default=256,
-                        help='size of RNN hidden state')
-    parser.add_argument('--num_layers', type=int, default=1,
-                        help='number of layers in the RNN')
-    parser.add_argument('--model', type=str, default='lstm',
-                        help='rnn, gru, or lstm')
-    parser.add_argument('--input_dim', type=int, default=2,
-                        help='dimension of input vector')
+    parser.add_argument('--rnn_size', type=int, default=256, help='size of RNN hidden state')
+    parser.add_argument('--num_layers', type=int, default=1, help='number of layers in the RNN')
+    parser.add_argument('--model', type=str, default='lstm', help='rnn, gru, or lstm')
+    parser.add_argument('--input_dim', type=int, default=2, help='dimension of input vector')
 
     # # training setting
-    parser.add_argument('--dataset_path', type=str, default='./dataset',
-                        help='dataset path')
-    parser.add_argument('--exp_id', type=int, default=0,
-                        help='dataset id')
+    parser.add_argument('--dataset_path', type=str, default='./dataset', help='dataset path')
+    parser.add_argument('--exp_id', type=int, default=0, help='dataset id')
     '''
     dataset number | random seed
     -----------------------------
@@ -70,44 +64,26 @@ def main():
     -----------------------------
            4       |      2                                           
     '''
-    parser.add_argument('--dataset_num', type=int, default=0, # ------------------
-                        help='dataset number')
-    parser.add_argument('--gpu_num', type=int, default=2,
-                        help='gpu device id utilized for training and validation')
-    parser.add_argument('--load_pretrained', type=int, default=0, # ------------------
-                        help='want to load pre-trained network?')
-    parser.add_argument('--batch_size', type=int, default=4,  # ------------------
-                        help='minibatch size')
-    parser.add_argument('--obs_length', type=int, default=8,  # ------------------
-                        help='observation sequence length')
-    parser.add_argument('--pred_length', type=int, default=12,  # ------------------
-                        help='prediction sequence length')
-    parser.add_argument('--num_epochs', type=int, default=300,
-                        help='number of epochs')
-    parser.add_argument('--model_dir', type=str, default='save',
-                        help='directory to save model to')
-    parser.add_argument('--grad_clip', type=float, default=1.5,
-                        help='clip gradients at this value')
-    parser.add_argument('--learning_rate', type=float, default=0.0001,
-                        help='learning rate')
-    parser.add_argument('--lambda_param', type=float, default=0.0001,
-                        help='regularization weight')
-    parser.add_argument('--gamma_param', type=float, default=0.001,
-                        help='regularization weight')
-    parser.add_argument('--keep_prob', type=float, default=0.8,
-                        help='dropout keep probability')
-    parser.add_argument('--patient_thr', type=float, default=100,
-                        help='threshold for early stopping')
-    parser.add_argument('--data_load_step', type=int, default=3,
-                        help='data_load_step')
-    parser.add_argument('--start_epoch', type=int, default=0,
-                        help='start epoch value')
-    parser.add_argument('--min_avg_loss', type=float, default=100000.0,
-                        help='min avg loss')
+    parser.add_argument('--dataset_num', type=int, default=0, help='dataset number')
+    parser.add_argument('--gpu_num', type=int, default=2, help='gpu device id utilized for training and validation')
+    parser.add_argument('--load_pretrained', type=int, default=0, help='want to load pre-trained network?')
+    parser.add_argument('--batch_size', type=int, default=4, help='minibatch size')
+    parser.add_argument('--obs_length', type=int, default=8, help='observation sequence length')
+    parser.add_argument('--pred_length', type=int, default=12, help='prediction sequence length')
+    parser.add_argument('--num_epochs', type=int, default=300, help='number of epochs')
+    parser.add_argument('--model_dir', type=str, default='save', help='directory to save model to')
+    parser.add_argument('--grad_clip', type=float, default=1.5, help='clip gradients at this value')
+    parser.add_argument('--learning_rate', type=float, default=0.0001, help='learning rate')
+    parser.add_argument('--lambda_param', type=float, default=0.0001, help='l2-regularization weight')
+    parser.add_argument('--gamma_param', type=float, default=0.001, help='IRL regularization weight')
+    parser.add_argument('--keep_prob', type=float, default=0.8, help='dropout keep probability')
+    parser.add_argument('--patient_thr', type=float, default=100, help='threshold for early stopping')
+    parser.add_argument('--data_load_step', type=int, default=3, help='data_load_step for training')
+    parser.add_argument('--start_epoch', type=int, default=0, help='start epoch value')
+    parser.add_argument('--min_avg_loss', type=float, default=100000.0, help='min avg loss')
 
     # # map info
-    parser.add_argument('--map_size', type=int, default=72,
-                        help='width of map image')
+    parser.add_argument('--map_size', type=int, default=96, help='width of map image')
 
     args = parser.parse_args()
     train(args)
