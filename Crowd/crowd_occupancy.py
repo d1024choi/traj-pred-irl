@@ -1,8 +1,7 @@
 '''
  GENERATING OCCUPANCY GRID MAP
  MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
- VERSION : 3.2 (2019-01-11)
- DESCRIPTION :
+ DATE : 2019-12-06
 '''
 
 import numpy as np

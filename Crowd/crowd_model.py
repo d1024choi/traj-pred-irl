@@ -394,66 +394,68 @@ class Model():
         # # --------------------------------------------------------------------
         # Define final cost and optimizer
 
-        # normalize cost
-        self.cost_pos_dec /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
-        self.cost_valid /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
+        if (infer == False):
 
-        # gather all the trainable weights
-        tvars = tf.trainable_variables()
+            # normalize cost
+            self.cost_pos_dec /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
+            self.cost_valid /= (args.pred_length * tf.reduce_sum(self.num_valid_peds))
 
-        # trainable variables in analyzer layer
-        tvars_analyze = [var for var in tvars if 'analyzer' in var.name]
+            # gather all the trainable weights
+            tvars = tf.trainable_variables()
 
-        # trainable variables in reward layer
-        tvars_reward = [var for var in tvars if 'reward' in var.name]
+            # trainable variables in analyzer layer
+            tvars_analyze = [var for var in tvars if 'analyzer' in var.name]
 
-        # trainable variables in rnn layer
-        tvars_pose = [var for var in tvars if 'rnnlm' in var.name]
+            # trainable variables in reward layer
+            tvars_reward = [var for var in tvars if 'reward' in var.name]
 
-
-        # for l2-regularization (bias term is excluded)
-        l2_analyze = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_analyze if not ("bias" in tvar.name))
-        l2_reward = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_reward if not ("bias" in tvar.name))
-        l2_pose = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_pose if not ("bias" in tvar.name))
-
-        # debug : verification code ----
-        #print('conv l2')
-        #[print(tvar) for tvar in tvars_analyze if not ("bias" in tvar.name)]
-        #print('reward l2')
-        #[print(tvar) for tvar in tvars_reward if not ("bias" in tvar.name)]
-        #print('pose l2')
-        #[print(tvar) for tvar in tvars_pose if not ("bias" in tvar.name)]
-
-        # analyzer needs to be trained while training reward layer and rnn layer
-        tvars_anal_reward = copy.copy(tvars_reward)
-        tvars_anal_pose = copy.copy(tvars_pose)
-        for var in tvars_analyze:
-            tvars_anal_reward.append(var)
-            tvars_anal_pose.append(var)
-
-        if(args.isprint == 1):
-            print('############ Trainable variables : reward ############')
-            for var in tvars_anal_reward:
-                print(var)
-
-            print('############ Trainable variables : pose ############')
-            for var in tvars_anal_pose:
-                print(var)
+            # trainable variables in rnn layer
+            tvars_pose = [var for var in tvars if 'rnnlm' in var.name]
 
 
-        # add to overall cost
-        self.cost_pos_dec += (args.gamma_param * self.cost_policy) + l2_pose + l2_analyze
-        self.cost_reward += l2_reward + l2_analyze
+            # for l2-regularization (bias term is excluded)
+            l2_analyze = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_analyze if not ("bias" in tvar.name))
+            l2_reward = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_reward if not ("bias" in tvar.name))
+            l2_pose = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_pose if not ("bias" in tvar.name))
 
-        # gradient clipping
-        grads_pose, _ = tf.clip_by_global_norm(tf.gradients(self.cost_pos_dec, tvars_anal_pose), args.grad_clip)
-        grads_reward = tf.gradients(self.cost_reward, tvars_anal_reward)
+            # debug : verification code ----
+            #print('conv l2')
+            #[print(tvar) for tvar in tvars_analyze if not ("bias" in tvar.name)]
+            #print('reward l2')
+            #[print(tvar) for tvar in tvars_reward if not ("bias" in tvar.name)]
+            #print('pose l2')
+            #[print(tvar) for tvar in tvars_pose if not ("bias" in tvar.name)]
 
-        optimizer = tf.train.AdamOptimizer(args.learning_rate)
+            # analyzer needs to be trained while training reward layer and rnn layer
+            tvars_anal_reward = copy.copy(tvars_reward)
+            tvars_anal_pose = copy.copy(tvars_pose)
+            for var in tvars_analyze:
+                tvars_anal_reward.append(var)
+                tvars_anal_pose.append(var)
 
-        # define train operation
-        self.train_op_pose = optimizer.apply_gradients(zip(grads_pose, tvars_anal_pose))
-        self.train_op_reward = optimizer.apply_gradients(zip(grads_reward, tvars_anal_reward))
+            if(args.isprint == 1):
+                print('############ Trainable variables : reward ############')
+                for var in tvars_anal_reward:
+                    print(var)
+
+                print('############ Trainable variables : pose ############')
+                for var in tvars_anal_pose:
+                    print(var)
+
+
+            # add to overall cost
+            self.cost_pos_dec += (args.gamma_param * self.cost_policy) + l2_pose + l2_analyze
+            self.cost_reward += l2_reward + l2_analyze
+
+            # gradient clipping
+            grads_pose, _ = tf.clip_by_global_norm(tf.gradients(self.cost_pos_dec, tvars_anal_pose), args.grad_clip)
+            grads_reward = tf.gradients(self.cost_reward, tvars_anal_reward)
+
+            optimizer = tf.train.AdamOptimizer(args.learning_rate)
+
+            # define train operation
+            self.train_op_pose = optimizer.apply_gradients(zip(grads_pose, tvars_anal_pose))
+            self.train_op_reward = optimizer.apply_gradients(zip(grads_reward, tvars_anal_reward))
 
 
     def GetSocialPooledHiddenStates(self, grid_map, output_states, w, b):

@@ -1,8 +1,7 @@
 '''
  VALIDATION CODE SHARED BY EACH ALGORITHMS
  MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
- VERSION : 3.1 (2019-01-25)
- DESCRIPTION : ...
+ DATE : 2019-12-06
 '''
 
 
@@ -18,12 +17,9 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_num', type=int, default=4,
-                        help='target dataset number')
-    parser.add_argument('--exp_id', type=int, default=7,
-                        help='experiment id')
-    parser.add_argument('--gpu_num', type=int, default=0,
-                        help='target gpu')
+    parser.add_argument('--dataset_num', type=int, default=3, help='target dataset number')
+    parser.add_argument('--exp_id', type=int, default=0, help='experiment id')
+    parser.add_argument('--gpu_num', type=int, default=0, help='target gpu')
 
     input_args = parser.parse_args()
     test(input_args)

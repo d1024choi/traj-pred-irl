@@ -1,8 +1,7 @@
 '''
  VALIDATION CODE SHARED BY EACH ALGORITHMS
  MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
- VERSION : 3.0 (2018-10-30)
- DESCRIPTION : ...
+ DATE : 2019-12-06
 '''
 
 
@@ -18,12 +17,9 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_num', type=int, default=3,
-                        help='target dataset number')
-    parser.add_argument('--exp_id', type=int, default=4,
-                        help='experiment id')
-    parser.add_argument('--gpu_num', type=int, default=0,
-                        help='target gpu')
+    parser.add_argument('--dataset_num', type=int, default=3, help='target dataset number')
+    parser.add_argument('--exp_id', type=int, default=0, help='experiment id')
+    parser.add_argument('--gpu_num', type=int, default=0, help='target gpu')
 
     input_args = parser.parse_args()
     test(input_args)
@@ -37,8 +33,12 @@ def test(input_args):
 
     # load parameter setting
     with open(os.path.join(path, 'config.pkl'), 'rb') as f:
-        saved_args = pickle.load(f)
-        #saved_args = pickle.load(f, encoding='latin1')
+        try:
+            saved_args = pickle.load(f)
+            print('>> cpkl file was created under python 3.x')
+        except ValueError:
+            saved_args = pickle.load(f, encoding='latin1')
+            print('>> cpkl file was created under python 2.x')
 
     if (input_args.gpu_num == 0):
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -104,16 +104,6 @@ def test(input_args):
             FDE += displacement_error[pred_len-1]
             cnt += 1
 
-        if (False):
-            for k in range(0, nps[0]):
-                plt.plot(x_recon[k, :, 0], x_recon[k, :, 1], 'o-')
-                plt.plot(est_traj_recon[k, :, 0], est_traj_recon[k, :, 1], 'x-.')
-                #plt.plot(est_traj_recon[k, 0:8, 0], est_traj_recon[k, 0:8, 1], 'x-')
-
-            plt.axis([-15, 15, -15, 15])
-            plt.show()
-
-
     ADE = ADE / float(cnt)
     FDE = FDE / float(cnt)
     print('--------- dataset number : %d ---------' % saved_args.dataset_num)
@@ -121,11 +111,11 @@ def test(input_args):
     print('final displacement error : %.4f' % FDE)
 
 
-    #file_name_txt = 'test_result_' + str(input_args.dataset_num) + '.txt'
-    #file = open(os.path.join(path, file_name_txt), "w")
-    #file.write('ADE: ' + str(ADE) + '____')
-    #file.write('FDE: ' + str(FDE) + '____')
-    #file.close()
+    file_name_txt = 'test_result_' + str(input_args.dataset_num) + '.txt'
+    file = open(os.path.join(path, file_name_txt), "w")
+    file.write('ADE: ' + str(ADE) + '____')
+    file.write('FDE: ' + str(FDE) + '____')
+    file.close()
 
 if __name__ == '__main__':
     main()

@@ -1,9 +1,7 @@
 '''
  CROWD DATA LOADER BASED ON KITTI DATA LOADER
  MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
- VERSION : 3.3 (2019-01-25)
- DESCRIPTION : READ TRAJECTORY DATA FROM PICKLE FINES AND MAKE BATCHES FOR TRAINING
-               AND VALIDATION AND EVALUATION
+ DATE : 2019-12-06
 
 dataset number | leave dataset name
 ------------------------------------

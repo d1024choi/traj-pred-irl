@@ -1,3 +1,9 @@
+'''
+ CROWD TRAJECTORY PREDICTION TRAINING
+ MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
+ DATE : 2019-12-06
+'''
+
 import argparse
 import time
 
@@ -41,18 +47,13 @@ def main():
     parser = argparse.ArgumentParser()
 
     # # Is print information ?
-    parser.add_argument('--isprint', type=int, default=0,
-                        help='determine if you want to print specific info.')
+    parser.add_argument('--isprint', type=int, default=0, help='determine if you want to print specific info.')
 
     # # network structure : LSTM
-    parser.add_argument('--rnn_size', type=int, default=32,
-                        help='size of RNN hidden state')
-    parser.add_argument('--num_layers', type=int, default=1,
-                        help='number of layers in the RNN')
-    parser.add_argument('--model', type=str, default='lstm',
-                        help='rnn, gru, or lstm')
-    parser.add_argument('--input_dim', type=int, default=2,
-                        help='dimension of input vector')
+    parser.add_argument('--rnn_size', type=int, default=32, help='size of RNN hidden state')
+    parser.add_argument('--num_layers', type=int, default=1, help='number of layers in the RNN')
+    parser.add_argument('--model', type=str, default='lstm', help='rnn, gru, or lstm')
+    parser.add_argument('--input_dim', type=int, default=2, help='dimension of input vector')
 
     # # training setting
     '''
@@ -63,55 +64,32 @@ def main():
     zara1         |       3
     zara2         |       4
     '''
-    parser.add_argument('--exp_id', type=int, default=0, # ------------------
-                        help='experiment id')
-    parser.add_argument('--dataset_num', type=int, default=3, # ------------------
-                        help='target dataset number')
-    parser.add_argument('--dataset_path', type=str, default='./datasets/',
-                        help='dataset path')
-    parser.add_argument('--is_pretrain', type=int, default=0, # ------------------
-                        help='this is pretrain using smoothed dataset?')
-    parser.add_argument('--load_pretrained', type=int, default=1, # ------------------
-                        help='want to load pre-trained network?')
-    parser.add_argument('--batch_size', type=int, default=1,  # ------------------
-                        help='minibatch size')
-    parser.add_argument('--obs_length', type=int, default=8,
-                        help='observation sequence length')
-    parser.add_argument('--pred_length', type=int, default=12,
-                        help='prediction sequence length')
-    parser.add_argument('--num_epochs', type=int, default=300,
-                        help='number of epochs')
-    parser.add_argument('--model_dir', type=str, default='save',
-                        help='directory to save model to')
-    parser.add_argument('--grad_clip', type=float, default=1.5,
-                        help='clip gradients at this value')
-    parser.add_argument('--learning_rate', type=float, default=0.0001,
-                        help='learning rate')
-    parser.add_argument('--lambda_param', type=float, default=0.0005, # ------------------
-                        help='regularization weight')
-    parser.add_argument('--gamma_param', type=float, default=0.0001, # ------------------
-                        help='regularization weight2')
-    parser.add_argument('--keep_prob', type=float, default=0.8,
-                        help='dropout keep probability')
-    parser.add_argument('--patient_thr', type=float, default=100,
-                        help='threshold for early stopping')
-    parser.add_argument('--gpu_num', type=int, default=0,
-                        help='default gpu number')
-    parser.add_argument('--start_epoch', type=int, default=0,
-                        help='start epoch value')
-    parser.add_argument('--min_avg_loss', type=float, default=100000.0,
-                        help='min avg loss')
-    parser.add_argument('--data_load_step', type=int, default=2, # ------------------
-                        help='data_load_step')
+    parser.add_argument('--exp_id', type=int, default=0, help='experiment id')
+    parser.add_argument('--dataset_num', type=int, default=3, help='target dataset number')
+    parser.add_argument('--dataset_path', type=str, default='./datasets/', help='dataset path')
+    parser.add_argument('--is_pretrain', type=int, default=0, help='this is pretrain using smoothed dataset?')
+    parser.add_argument('--load_pretrained', type=int, default=1, help='want to load pre-trained network?')
+    parser.add_argument('--batch_size', type=int, default=1, help='minibatch size')
+    parser.add_argument('--obs_length', type=int, default=8, help='observation sequence length')
+    parser.add_argument('--pred_length', type=int, default=12, help='prediction sequence length')
+    parser.add_argument('--num_epochs', type=int, default=300, help='number of epochs')
+    parser.add_argument('--model_dir', type=str, default='save', help='directory to save model to')
+    parser.add_argument('--grad_clip', type=float, default=1.5, help='clip gradients at this value')
+    parser.add_argument('--learning_rate', type=float, default=0.0001, help='learning rate')
+    parser.add_argument('--lambda_param', type=float, default=0.0005, help='l2-regularization weight')
+    parser.add_argument('--gamma_param', type=float, default=0.0001, help='IRL regularization weight2')
+    parser.add_argument('--keep_prob', type=float, default=0.8, help='dropout keep probability')
+    parser.add_argument('--patient_thr', type=float, default=100, help='threshold for early stopping')
+    parser.add_argument('--gpu_num', type=int, default=0, help='default gpu number')
+    parser.add_argument('--start_epoch', type=int, default=0, help='start epoch value')
+    parser.add_argument('--min_avg_loss', type=float, default=100000.0, help='min avg loss')
+    parser.add_argument('--data_load_step', type=int, default=2, help='data_load_step')
 
 
     # # social info
-    parser.add_argument('--max_num_peds', type=int, default=2, # ------------------
-                        help='maximum number of peds')
-    parser.add_argument('--social_range', type=int, default=2,
-                        help='maximum distance for considering social neighbor')
-    parser.add_argument('--grid_size', type=int, default=8,
-                        help='grid size')
+    parser.add_argument('--max_num_peds', type=int, default=40, help='maximum number of peds')
+    parser.add_argument('--social_range', type=int, default=2, help='maximum distance for considering social neighbor')
+    parser.add_argument('--grid_size', type=int, default=8, help='grid size')
 
     args = parser.parse_args()
     train(args)
@@ -172,7 +150,6 @@ def train(args):
             min_avg_loss = args.min_avg_loss
         print('>> training and validation start from epoch %d  with min_avg_loss %.4f' % (start_epoch, min_avg_loss))
         for e in range(start_epoch, args.num_epochs):
-        #for e in range(2):
 
             # initialize state
             state = model.init_states_enc.eval()
@@ -186,7 +163,6 @@ def train(args):
 
             start = time.time()
             for b in range(data_loader.num_batches):
-            #for b in range(1):
 
                 '''
                 np : num peds       <1> x batch_size
@@ -230,7 +206,6 @@ def train(args):
                 xoo_p_re = np.swapaxes(np.swapaxes(xoo_p_re, 0, 1), 1, 2) # batch x mnp x obs_len x input
 
                 # create occupancy grid map (ogm) for policy
-                # debug 190110 ----
                 ogm_p = rectangular_occupancy_map_policy(xo, xoo, xoo_p_re, args.max_num_peds, nps, args.obs_length, args.social_range, args.grid_size)
 
 
