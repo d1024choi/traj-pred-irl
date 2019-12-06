@@ -286,62 +286,64 @@ class Model():
         # # --------------------------------------------------------------------
         # Define final cost and optimizer
 
-        # normalize cost
-        self.cost_pos_dec /= (args.batch_size * args.pred_length)
-        self.cost_valid /= (args.batch_size * args.pred_length)
-        self.cost_reward /= args.batch_size
-        self.cost_policy /= args.batch_size
+        if (infer == False):
 
-        # gather all the trainable weights
-        tvars = tf.trainable_variables()
+            # normalize cost
+            self.cost_pos_dec /= (args.batch_size * args.pred_length)
+            self.cost_valid /= (args.batch_size * args.pred_length)
+            self.cost_reward /= args.batch_size
+            self.cost_policy /= args.batch_size
 
-        # trainable variables in conv layer
-        tvars_conv = [var for var in tvars if 'convlayer' in var.name]
+            # gather all the trainable weights
+            tvars = tf.trainable_variables()
 
-        # trainable variables in reward layer
-        tvars_reward = [var for var in tvars if 'reward' in var.name]
+            # trainable variables in conv layer
+            tvars_conv = [var for var in tvars if 'convlayer' in var.name]
 
-        # trainable variables in rnn layer
-        tvars_pose = [var for var in tvars if 'rnnlm' in var.name]
+            # trainable variables in reward layer
+            tvars_reward = [var for var in tvars if 'reward' in var.name]
 
-
-        # for l2-regularization (bias term is excluded)
-        l2_conv = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_conv if not ("bias" in tvar.name))
-        l2_reward = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_reward if not ("bias" in tvar.name))
-        l2_pose = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_pose if not ("bias" in tvar.name))
+            # trainable variables in rnn layer
+            tvars_pose = [var for var in tvars if 'rnnlm' in var.name]
 
 
-        # debug : verification code ----
-        #print('conv l2')
-        #[print(tvar) for tvar in tvars_conv if not ("bias" in tvar.name)]
-        #print('reward l2')
-        #[print(tvar) for tvar in tvars_reward if not ("bias" in tvar.name)]
-        #print('pose l2')
-        #[print(tvar) for tvar in tvars_pose if not ("bias" in tvar.name)]
-
-        # conv layer needs to be trained while training reward layer and rnn layer
-        tvars_conv_reward = copy.copy(tvars_reward)
-        tvars_conv_pose = copy.copy(tvars_pose)
-        for var in tvars_conv:
-            tvars_conv_reward.append(var)
-            tvars_conv_pose.append(var)
+            # for l2-regularization (bias term is excluded)
+            l2_conv = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_conv if not ("bias" in tvar.name))
+            l2_reward = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_reward if not ("bias" in tvar.name))
+            l2_pose = args.lambda_param * sum(tf.nn.l2_loss(tvar) for tvar in tvars_pose if not ("bias" in tvar.name))
 
 
-        # add to overall cost
-        # TODO : what about define three costs respctively for pose, encoder reward, reward function
-        self.cost_pos_dec += (args.gamma_param)*self.cost_policy + l2_pose + l2_conv
-        self.cost_reward += l2_reward + l2_conv
+            # debug : verification code ----
+            #print('conv l2')
+            #[print(tvar) for tvar in tvars_conv if not ("bias" in tvar.name)]
+            #print('reward l2')
+            #[print(tvar) for tvar in tvars_reward if not ("bias" in tvar.name)]
+            #print('pose l2')
+            #[print(tvar) for tvar in tvars_pose if not ("bias" in tvar.name)]
 
-        # gradient clipping
-        grads_pose, _ = tf.clip_by_global_norm(tf.gradients(self.cost_pos_dec, tvars_conv_pose), args.grad_clip)
-        grads_reward = tf.gradients(self.cost_reward, tvars_conv_reward)
+            # conv layer needs to be trained while training reward layer and rnn layer
+            tvars_conv_reward = copy.copy(tvars_reward)
+            tvars_conv_pose = copy.copy(tvars_pose)
+            for var in tvars_conv:
+                tvars_conv_reward.append(var)
+                tvars_conv_pose.append(var)
 
-        # TODO : what about define separate optimizers for generator and reward function (Social GAN did it)
-        optimizer = tf.train.AdamOptimizer(args.learning_rate)
 
-        # define train operation
-        self.train_op_pose = optimizer.apply_gradients(zip(grads_pose, tvars_conv_pose))
-        self.train_op_reward = optimizer.apply_gradients(zip(grads_reward, tvars_conv_reward))
+            # add to overall cost
+            # TODO : what about define three costs respctively for pose, encoder reward, reward function
+            self.cost_pos_dec += (args.gamma_param)*self.cost_policy + l2_pose + l2_conv
+            self.cost_reward += l2_reward + l2_conv
+
+            # gradient clipping
+            grads_pose, _ = tf.clip_by_global_norm(tf.gradients(self.cost_pos_dec, tvars_conv_pose), args.grad_clip)
+            grads_reward = tf.gradients(self.cost_reward, tvars_conv_reward)
+
+            # TODO : what about define separate optimizers for generator and reward function (Social GAN did it)
+            optimizer = tf.train.AdamOptimizer(args.learning_rate)
+
+            # define train operation
+            self.train_op_pose = optimizer.apply_gradients(zip(grads_pose, tvars_conv_pose))
+            self.train_op_reward = optimizer.apply_gradients(zip(grads_reward, tvars_conv_reward))
 
 
     def sample(self, sess, xoo, mo, init_state_enc):

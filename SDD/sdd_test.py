@@ -1,8 +1,7 @@
 '''
  VALIDATION CODE SHARED BY EACH ALGORITHMS
  MADE BY DOOSEOP CHOI (d1024.choi@etri.re.kr)
- VERSION : 0.1 (2019-01-09)
- DESCRIPTION : ...
+ DATE : 2019-12-06
 '''
 
 
@@ -17,12 +16,9 @@ import argparse
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset_num', type=int, default=0,
-                        help='target dataset number')
-    parser.add_argument('--exp_id', type=int, default=0,
-                        help='experiment id')
-    parser.add_argument('--gpu_num', type=int, default=0,
-                        help='target gpu')
+    parser.add_argument('--dataset_num', type=int, default=0, help='target dataset number')
+    parser.add_argument('--exp_id', type=int, default=0, help='experiment id')
+    parser.add_argument('--gpu_num', type=int, default=0, help='target gpu')
 
     input_args = parser.parse_args()
     test(input_args)
@@ -36,8 +32,12 @@ def test(input_args):
 
     # load parameter setting
     with open(os.path.join(path, 'config.pkl'), 'rb') as f:
-        saved_args = pickle.load(f)
-        #saved_args = pickle.load(f, encoding='latin1')
+        try:
+            saved_args = pickle.load(f)
+            print('>> cpkl file was created under python 3.x')
+        except ValueError:
+            saved_args = pickle.load(f, encoding='latin1')
+            print('>> cpkl file was created under python 2.x')
 
     if (input_args.gpu_num == 0):
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -64,14 +64,11 @@ def test(input_args):
 
     # ------------------------------------------------------
     # variable definition for validation
-
     init_state = np.zeros(shape=(1, 1, 2*saved_args.rnn_size))
 
     # load validation data
     data_loader = DataLoader(saved_args)
 
-    #ADE = 0.0
-    #FDE = 0.0
     ADE = []
     FDE = []
     cnt = 0
@@ -79,7 +76,7 @@ def test(input_args):
     printProgressBar(0, data_loader.num_test_scenes - 1, prefix='Progress:', suffix='Complete', length=50, epoch=0)
     for b in range(data_loader.num_test_scenes):
 
-        xo, xp, xoo, xpo, did = data_loader.next_batch_test([b])
+        xo, xp, xoo, xpo, did, pid = data_loader.next_batch_test([b])
         mo = make_map_batch(xo, did, data_loader.map, saved_args.map_size)
 
         # run prediction
@@ -101,20 +98,11 @@ def test(input_args):
         FDE.append(displacement_error[pred_len-1])
         cnt += 1
 
-        if (False):
-            plt.plot(x_recon[:, 0], x_recon[:, 1], 'ko-')
-            plt.plot(est_traj_recon[:, 0], est_traj_recon[:, 1], 'rx-.')
-            plt.show()
-
         printProgressBar(b, data_loader.num_test_scenes - 1, prefix='Progress:', suffix='Complete', length=50, epoch=0)
 
-
-    #ADE = ADE / float(cnt)
-    #FDE = FDE / float(cnt)
     print('--------- dataset number : %d ---------' % saved_args.dataset_num)
     print('average displacement error : %.4f' % np.mean(ADE))
     print('final displacement error : %.4f' % np.mean(FDE))
-
 
     file_name_txt = 'test_result_' + str(input_args.dataset_num) + '.txt'
     file = open(os.path.join(path, file_name_txt), "w")

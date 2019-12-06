@@ -147,7 +147,6 @@ def train(args):
 
         # start training and validation !!!!
         for e in range(start_epoch, args.num_epochs):
-        # for e in range(1):
 
             state = model.init_state_enc.eval()
 
@@ -159,7 +158,6 @@ def train(args):
             start = time.time()
 
             for b in range(data_loader.num_batches):
-            #for b in range(10):
 
                 # load mini-batch
                 xo, xp, xoo, xpo, did = data_loader.next_batch(rand_list[b * args.batch_size:(b + 1) * args.batch_size])
@@ -211,8 +209,7 @@ def train(args):
 
             # show current performance
             print('>> cur cost: %.4f, cur best: %.4f (time %.1fs, p-lvl %02d, %.1f hrs left)'
-                  % (np.mean(valid_loss_list), min_avg_loss, (end - start), patient,
-                     ((end - start) * (args.num_epochs - e - 1) / 3600.0)))
+                  % (np.mean(valid_loss_list), min_avg_loss, (end - start), patient, ((end - start) * (args.num_epochs - e - 1) / 3600.0)))
 
             # save every breakthrough
             if (min_avg_loss > np.mean(valid_loss_list)):
