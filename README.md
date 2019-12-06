@@ -5,7 +5,7 @@
 ## Setup
 All the codes were developed on Ubuntu 16.04 with Python 3.5 and Tensorflow 1.10.0. Two folders, **Crowd** and **SDD**, in the root directory contains 1) datasets, 2) trained models, and 3) the implementation codes respectively for **ETH/UCY** and **Standford Drone Dataset**. 
 
-## Training New Models
+## Train New Models
 
 To train the network from scratch, run the followings. The parameters of the trained networks will be stored at the folder ***saved_1_0***.
 ```sh
