@@ -1,6 +1,8 @@
 # Official implementation codes of the paper "Regularizing Neural Networks for Future Trajectory Prediction via Inverse Reinforcement Learning Framework".
 
-The paper is accepted for the publication in IET Computer Vision. If you want to see the ArXiv version of the paper, visit https://arxiv.org/abs/1907.04525. A copy of the IET CV version can be found at https://www.researchgate.net/publication/339430005_Regularizing_Neural_Networks_for_Future_Trajectory_Prediction_via_Inverse_Reinforcement_Learning_Framework.
+The paper is accepted for the publication in IET Computer Vision. If you want to see the ArXiv version of the paper, visit https://arxiv.org/abs/1907.04525. 
+
+A copy of the IET CV version can be found at https://www.researchgate.net/publication/339430005_Regularizing_Neural_Networks_for_Future_Trajectory_Prediction_via_Inverse_Reinforcement_Learning_Framework.
 
 ## Setup
 All the codes were developed on Ubuntu 16.04 with Python 3.5 and Tensorflow 1.10.0. Two folders, **Crowd** and **SDD**, in the root directory contains 1) datasets, 2) trained models, and 3) the implementation codes respectively for **ETH/UCY** and **Standford Drone Dataset**. 
