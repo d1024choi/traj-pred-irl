@@ -25,7 +25,7 @@ $ python sdd_test.py --dataset_num 1 --exp_id 0
 
 ## Pretrained Models
 Download the pre-trained models from https://www.dropbox.com/sh/nbxr12n6i3jgoi5/AABH3URiRQ_wwYU--lGDIHZTa?dl=0
-Each model in the downloaded folder was the result with the best gamma parameter reported in the paper.
+Each model in the downloaded folder is the result with the best gamma parameter reported in the paper.
 
 ## Citation
 ```
