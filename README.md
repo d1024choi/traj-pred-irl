@@ -1,6 +1,6 @@
 # Official implementation of "Regularizing Neural Networks for Future Trajectory Prediction via Inverse Reinforcement Learning Framework" published in IET Computer Vision.
 
-![](Image/TPIRL.png)
+![](Images/TPIRL.png)
 
 The paper is published in IET Computer Vision. If you want to see the ArXiv version of the paper, visit https://arxiv.org/abs/1907.04525. 
 
